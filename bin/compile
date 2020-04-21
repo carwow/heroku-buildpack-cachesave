@@ -10,6 +10,7 @@ indent() {
 
 BUILD_DIR=$1
 CACHE_DIR=$2
+HOME_FOLDER_REPLACEMENT="__CACHE_HOME__"
 
 
 echo "=====> Caching files for future builds"
@@ -17,8 +18,15 @@ echo "=====> Caching files for future builds"
 for FILENAME in $(cat ${BUILD_DIR}/.buildcache | sed '/^$/d'); do
   echo -n "${FILENAME}" | indent
 
-  SRC=${BUILD_DIR}/${FILENAME}
-  DEST=${CACHE_DIR}/buildcache/${FILENAME}
+
+  if [[ ${FILENAME} = \~/* ]]; then
+    WITHOUT_TILDE=$(echo ${FILENAME} | sed 's/~\///')
+    SRC=~/${WITHOUT_TILDE}
+    DEST=${CACHE_DIR}/buildcache/${HOME_FOLDER_REPLACEMENT}/${WITHOUT_TILDE}
+  else
+    SRC=${BUILD_DIR}/${FILENAME}
+    DEST=${CACHE_DIR}/buildcache/${FILENAME}
+  fi
 
   # skip non-existing files
   if ! [ -e ${SRC} ]; then
@@ -30,9 +38,7 @@ for FILENAME in $(cat ${BUILD_DIR}/.buildcache | sed '/^$/d'); do
   mkdir -p $(dirname ${DEST})
 
   # delete old files
-  if [ -e ${DEST} ]; then
-    rm -r ${DEST}
-  fi
+  rm -rf ${DEST}
 
   # copy files to cache
   cp -r ${SRC} ${DEST}
