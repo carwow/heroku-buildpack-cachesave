@@ -18,7 +18,6 @@ echo "=====> Caching files for future builds"
 for FILENAME in $(cat ${BUILD_DIR}/.buildcache | sed '/^$/d'); do
   echo -n "${FILENAME}" | indent
 
-
   if [[ ${FILENAME} = \~/* ]]; then
     WITHOUT_TILDE=$(echo ${FILENAME} | sed 's/~\///')
     SRC=~/${WITHOUT_TILDE}
