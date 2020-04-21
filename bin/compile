@@ -38,7 +38,9 @@ for FILENAME in $(cat ${BUILD_DIR}/.buildcache | sed '/^$/d'); do
   mkdir -p $(dirname ${DEST})
 
   # delete old files
-  rm -rf ${DEST}
+  if [ -e ${DEST} ]; then
+    rm -r ${DEST}
+  fi
 
   # copy files to cache
   cp -r ${SRC} ${DEST}
